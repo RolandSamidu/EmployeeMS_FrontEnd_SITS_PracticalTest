@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { getAllEmployees, deleteEmployee } from "../services/EmployeeService";
+import { getAllEmployees, getEmployeeById, deleteEmployee } from "../services/EmployeeService";
 import { useNavigate } from "react-router-dom";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,6 +21,21 @@ const EmployeeList = () => {
       });
   };
 
+  const handleSearch = () => {
+    if (search.trim() === "") {
+      fetchEmployees(); 
+    } else {
+      getEmployeeById(search)
+        .then((response) => {
+          setEmployees([response.data]);
+        })
+        .catch((error) => {
+          console.error("Employee not found:", error);
+          setEmployees([]); 
+        });
+    }
+  };
+
   const handleEdit = (id) => {
     navigate(`/employees/update/${id}`);
   };
@@ -29,7 +45,7 @@ const EmployeeList = () => {
       deleteEmployee(id)
         .then(() => {
           alert("Employee deleted successfully!");
-          fetchEmployees(); // Refresh the list
+          fetchEmployees(); 
         })
         .catch((error) => {
           console.error("Error deleting employee:", error);
@@ -40,9 +56,27 @@ const EmployeeList = () => {
   return (
     <div className="p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Employee List</h2>
+
+      <div className="mb-4 flex">
+        <input
+          type="text"
+          placeholder="Enter Employee ID..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border p-2 w-full rounded-l"
+        />
+        <button
+          onClick={handleSearch}
+          className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-700"
+        >
+          Search
+        </button>
+      </div>
+
       <table className="w-full border-collapse border border-gray-300">
         <thead className="bg-gray-800 text-white">
           <tr>
+            <th className="border border-gray-300 p-2">ID</th>
             <th className="border border-gray-300 p-2">First Name</th>
             <th className="border border-gray-300 p-2">Last Name</th>
             <th className="border border-gray-300 p-2">Email</th>
@@ -54,10 +88,11 @@ const EmployeeList = () => {
           {employees.length > 0 ? (
             employees.map((emp) => (
               <tr key={emp.id} className="text-center border border-gray-300">
+                <td className="border border-gray-300 p-2">{emp.id}</td>
                 <td className="border border-gray-300 p-2">{emp.firstName}</td>
                 <td className="border border-gray-300 p-2">{emp.lastName}</td>
                 <td className="border border-gray-300 p-2">{emp.email}</td>
-                <td className="border border-gray-300 p-2">Rs. {emp.salary}</td>
+                <td className="border border-gray-300 p-2">${emp.salary}</td>
                 <td className="border border-gray-300 p-2 space-x-2">
                   <button
                     onClick={() => handleEdit(emp.id)}
