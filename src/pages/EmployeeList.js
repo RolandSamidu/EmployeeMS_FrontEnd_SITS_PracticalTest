@@ -92,7 +92,7 @@ const EmployeeList = () => {
                 <td className="border border-gray-300 p-2">{emp.firstName}</td>
                 <td className="border border-gray-300 p-2">{emp.lastName}</td>
                 <td className="border border-gray-300 p-2">{emp.email}</td>
-                <td className="border border-gray-300 p-2">${emp.salary}</td>
+                <td className="border border-gray-300 p-2">Rs. {emp.salary}</td>
                 <td className="border border-gray-300 p-2 space-x-2">
                   <button
                     onClick={() => handleEdit(emp.id)}
